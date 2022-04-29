@@ -1,0 +1,67 @@
+﻿@model IndexModelMY
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+
+    <p>Aspose words test app by Ivan Koroteev</p>
+    <div id="wordinput">
+        Input area for word file
+        <form asp-action="Create" asp-controller="Home"
+              method="post" enctype="multipart/form-data">
+            <input type="file" name="MyFile" asp-for="MyFile" value="Choose file" /><br>
+
+            <input type="submit" value="UPLOAD to backend" />
+        </form>
+    </div>
+
+
+
+    <form id="translateform" asp-action="Translate" asp-controller="Home"
+          method="post" enctype="multipart/form-data">
+        <div id="langfrom">
+            <label class="control-label">List of languages FROM, default "en"</label>
+
+
+
+            <select name="SelectedLangFrom" asp-for="SelectedLangFrom" form="translateform">
+
+                @foreach (var child in Model.YaLangs)
+                {
+
+                    if (child.Value == "en")
+                    {
+                        <option selected="selected" value="@child.Value">@child.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@child.Value">@child.Text</option>
+                    }
+
+
+                }
+            </select>
+        </div>
+        <div id="langto">
+            <label class="control-label">List of languages TO, default "ru"</label>
+
+            <select name="SelectedLangTo" asp-for="SelectedLangTo" form="translateform">
+                @foreach (var child in Model.YaLangs)
+                {
+
+                    if (child.Value == "ru")
+                    {
+                        <option selected="selected" value="@child.Value">@child.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@child.Value">@child.Text</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <input type="submit" value="TRANSLATE" />
+    </form>
+
+</div>
