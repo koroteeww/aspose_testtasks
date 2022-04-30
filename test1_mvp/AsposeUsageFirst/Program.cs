@@ -47,6 +47,7 @@ namespace AsposeUsageFirst
             {
                 res.Add(lang.Code);
             }
+            res.Sort();
             return res;
         }
     }
@@ -58,6 +59,7 @@ namespace AsposeUsageFirst
             YandexTranslator yandex = new YandexTranslator();
 
             List<string> langs = yandex.langs();
+            string availableLangs =String.Join(" ", langs.ToArray());
 
             if (args.Length == 3)
             {
@@ -72,22 +74,22 @@ namespace AsposeUsageFirst
                 }
                 else
                 {
-                    Console.WriteLine("wrong input. 1 - file path, 2 and 3 - langs. Available langs:"+String.Join(" ", langs.ToArray()) );
+                    Console.WriteLine("wrong input. 1 - file path, 2 and 3 - langs. Available langs:"+ availableLangs);
                 }
             }
             else
             {
                 
 
-                Console.WriteLine("Input lang from, available: " + String.Join(" ", langs.ToArray()));
+                Console.WriteLine("Input lang from, available: " + availableLangs);
                 string langfrom = Console.ReadLine().ToLower();
-                Console.WriteLine("Input lang to, available: " + String.Join(" ", langs.ToArray()));
+                Console.WriteLine("Input lang to, available: " + availableLangs);
                 string langto = Console.ReadLine().ToLower();
                 //langs check
                 if (langs.Contains(langfrom) && langs.Contains(langto))
                     mvp(yandex, langfrom, langto);
             }
-            
+            Console.ReadLine();
 
         }
         static void TestTask(YandexTranslator yandex, string path, string langfrom, string langto)
