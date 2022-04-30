@@ -16,7 +16,7 @@ namespace AsposeMVCTestN.Models
     public class IndexModelMY: PageModel
     {
         public IFormFile MyFile { set; get; }
-        
+        public string MyUrl="";
         public List<string> LangList = new List<string>();
         public Dictionary<string, string> LangDictionary = new Dictionary<string, string>();
 

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace AsposeMVCTestN.Controllers
@@ -39,17 +40,30 @@ namespace AsposeMVCTestN.Controllers
         }
         //static works for saving in controller
         private static MemoryStream doc;
+        private static string docurl = "";
 
         [HttpPost]
-        public IActionResult Create(IFormFile MyFile)
+        public IActionResult Create(IFormFile MyFile, string MyUrl="")
         {
-            if (MyFile == null)
+            if (!string.IsNullOrEmpty(MyUrl))
             {
-                return View("Error NULL");
+                //get from URL. fill doc memorystream from URL
+                docurl = MyUrl;
+                //assume we have direct link to docx file on some server
+                WebClient client = new WebClient();
+                byte[] data = client.DownloadData(docurl);
+                doc = new MemoryStream(data);
+
+                return RedirectToAction("Index");
+            }
+            else if (MyFile == null)
+            {
+                return View("Error");
             }
             else
             {
                 doc = new MemoryStream();
+                //copy to stream
                 MyFile.CopyTo(doc);
                 
                 return RedirectToAction("Index");
@@ -60,16 +74,16 @@ namespace AsposeMVCTestN.Controllers
         [HttpPost]
         public IActionResult Translate(string SelectedLangTo, string SelectedLangFrom)
         {
-            if (doc == null)
+            if (doc == null && string.IsNullOrEmpty(docurl) )
             {
-                throw new Exception("doc null((");
+                throw new Exception("doc and url empty :(");
             }
             else
             {
                 //Aspose usage
                 AsposeWords mvp = new AsposeWords();
                 string before = "";
-                var textafter = mvp.testMVP(doc, out before, SelectedLangFrom, SelectedLangTo);
+                var textafter = mvp.testTask(doc, out before, SelectedLangFrom, SelectedLangTo);
                 var md = new TranslateModel();
                 md.textBefore = before;
                 md.textAfter = textafter;
