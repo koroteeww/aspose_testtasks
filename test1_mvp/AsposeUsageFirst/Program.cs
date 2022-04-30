@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,12 +59,87 @@ namespace AsposeUsageFirst
 
             List<string> langs = yandex.langs();
 
-            Console.WriteLine("Input lang from, available: " + String.Join(" ", langs.ToArray()));
-            string langfrom = Console.ReadLine().ToLower();
-            Console.WriteLine("Input lang to, available: " + String.Join(" ", langs.ToArray()));
-            string langto = Console.ReadLine().ToLower();
-            //checking input not done...
+            if (args.Length == 3)
+            {
+                string pathToFile = args[0];
+                string langfrom = args[1];
+                string langto  = args[2];
+                //check langs and file
+                if (File.Exists(pathToFile) && langs.Contains(langfrom) && langs.Contains(langto))
+                {
+                    //do test task
+                    TestTask(yandex, pathToFile, langfrom, langto);
+                }
+                else
+                {
+                    Console.WriteLine("wrong input. 1 - file path, 2 and 3 - langs. Available langs:"+String.Join(" ", langs.ToArray()) );
+                }
+            }
+            else
+            {
+                
+
+                Console.WriteLine("Input lang from, available: " + String.Join(" ", langs.ToArray()));
+                string langfrom = Console.ReadLine().ToLower();
+                Console.WriteLine("Input lang to, available: " + String.Join(" ", langs.ToArray()));
+                string langto = Console.ReadLine().ToLower();
+                //langs check
+                if (langs.Contains(langfrom) && langs.Contains(langto))
+                    mvp(yandex, langfrom, langto);
+            }
             
+
+        }
+        static void TestTask(YandexTranslator yandex, string path, string langfrom, string langto)
+        {
+            Document doc = new Aspose.Words.Document(path);
+            StringBuilder sbres = new StringBuilder();
+            //1) check headers\footers\
+            var nodes = doc.GetChildNodes(NodeType.HeaderFooter, true);
+            if (nodes.Any())
+            {
+                foreach (var node in nodes)
+                {
+                    sbres.Append(node.GetText());
+                }
+            }
+            else
+            {
+                //2) check for footnote/endnote
+                var nodes2 = doc.GetChildNodes(NodeType.Footnote, true);
+                if (nodes2.Any())
+                {
+                    foreach (var node in nodes2)
+                    {
+                        sbres.Append(node.GetText());
+                    }
+                }
+                else
+                {
+                    //3) firts paragraph of each(!) section
+                    var nodes3 = doc.GetChildNodes(NodeType.Section, true);
+
+                    foreach (var node in nodes3)
+                    {
+                        var sect = (Section)node;
+                        var paragAll = sect.GetChildNodes(NodeType.Paragraph, true);
+                        if (paragAll.Any())
+                        {
+                            var paragfirst = paragAll.First();                            
+
+                            sbres.Append(paragfirst.GetText());
+                        }
+                    }
+                }
+            }
+            //translate res
+            var ans = yandex.translate(langfrom, langto, sbres.ToString());
+
+            Console.WriteLine("translation=" + ans);
+        }
+
+        static void mvp(YandexTranslator yandex, string langfrom, string langto)
+        {
             //word files hardcoded for mvp
             string pathToFile1 = @"headersENG.docx";
 
@@ -106,8 +182,8 @@ namespace AsposeUsageFirst
                     sb3.Append(parf.GetText());
                 }
             }
-            
-            var ans = yandex.translate(langfrom,langto,text1,text2, sb3.ToString() );
+
+            var ans = yandex.translate(langfrom, langto, text1, text2, sb3.ToString());
 
             Console.WriteLine("translation=" + ans);
         }
