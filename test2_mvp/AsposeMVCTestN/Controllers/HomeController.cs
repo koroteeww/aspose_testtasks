@@ -47,6 +47,16 @@ namespace AsposeMVCTestN.Controllers
         {
             if (!string.IsNullOrEmpty(MyUrl))
             {
+                if (MyUrl.Contains("google"))
+                {
+                    //get from google drive without google api
+                    //https://drive.google.com/uc?export=download&id=FILE_ID
+                    int pos1 = MyUrl.IndexOf("/d/")+3;
+                    int pos2 = MyUrl.IndexOf("/", pos1 +1);
+                    string fileid = MyUrl.Substring(pos1, pos2 - pos1);
+                    string gurl = "https://drive.google.com/uc?export=download&id=" + fileid.Trim();
+                    docurl = gurl;
+                }
                 //get from URL. fill doc memorystream from URL
                 docurl = MyUrl;
                 //assume we have direct link to docx file on some server

@@ -10,7 +10,7 @@
         <form asp-action="Create" asp-controller="Home"
               method="post" enctype="multipart/form-data">
             <input type="file" name="MyFile" asp-for="MyFile" value="Choose file" /><br>
-
+            <input type="url" name="MyUrl" asp-for="MyUrl" value="OR input file URL" /><br>
             <input type="submit" value="UPLOAD to backend" />
         </form>
     </div>
